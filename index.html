@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise!</title>
+    <style>
+        /* --- General Styles --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        /* --- Screen 1: Input Box --- */
+        #welcomeScreen {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 1s ease-in;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            border-radius: 30px;
+            border: none;
+            width: 70%;
+            font-size: 16px;
+            margin-top: 20px;
+            outline: none;
+            text-align: center;
+        }
+
+        button {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin-top: 20px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background-color: #e74c3c;
+        }
+
+        /* --- Screen 2: The Card --- */
+        #cardScreen {
+            display: none;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            animation: popUp 0.8s ease-out;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Georgia', serif;
+            color: #ff4d4d;
+            font-size: 2.5em;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .message {
+            font-size: 1.2em;
+            line-height: 1.5;
+            color: #f0f0f0;
+            margin-bottom: 20px;
+        }
+
+        .name-highlight {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.4em;
+            display: block;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* --- Video Styles --- */
+        /* Note: Removed the iframe wrapper styles and replaced with simple video styles */
+        video {
+            width: 100%;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            background: black;
+            display: block;
+        }
+
+        .tree-icon {
+            font-size: 60px;
+            display: block;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes popUp {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Snow --- */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            opacity: 0.8;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="snow-container"></div>
+
+    <div class="container">
+        
+        <div id="welcomeScreen">
+            <h2 style="margin-bottom: 5px;">Knock Knock! 🎅</h2>
+            <p>Who is receiving this gift?</p>
+            <input type="text" id="nameInput" placeholder="Type your name..." autocomplete="off">
+            <br>
+            <button onclick="openGift()">Open Gift 🎁</button>
+        </div>
+
+        <div id="cardScreen">
+            <div class="tree-icon">🎄</div>
+            <h1>Merry Christmas!</h1>
+            <p class="message">
+                Hope your holidays are as chaotic and wonderful as this video.
+                <br><br>
+                For: <span class="name-highlight" id="finalName">Friend</span>
+            </p>
+
+            <video id="memeVideo" controls>
+                <source src="xmas.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+
+        </div>
+
+    </div>
+
+    <script>
+        function openGift() {
+            var name = document.getElementById("nameInput").value;
+            if (name.trim() === "") { name = "My Friend"; }
+            
+            document.getElementById("finalName").innerText = name;
+            document.getElementById("welcomeScreen").style.display = "none";
+            document.getElementById("cardScreen").style.display = "block";
+
+            // --- THE MAGIC AUTOPLAY FIX ---
+            // Because this function runs when the user CLICKS the button,
+            // we are allowed to play audio!
+            var videoElement = document.getElementById("memeVideo");
+            videoElement.play();
+            videoElement.volume = 1.0; // Ensure volume is up
+        }
+
+        // Snow logic
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerText = '❄';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = Math.random() * 20 + 10 + 'px';
+            const duration = Math.random() * 3 + 2; 
+            snowflake.style.animationDuration = duration + 's';
+            document.body.appendChild(snowflake);
+            setTimeout(() => { snowflake.remove(); }, duration * 1000);
+        }
+        setInterval(createSnowflake, 100);
+
+        // Enter key support
+        document.getElementById("nameInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { openGift(); }
+        });
+    </script>
+
+</body>
+</html>
